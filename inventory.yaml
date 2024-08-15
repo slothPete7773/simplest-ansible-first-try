@@ -1,7 +1,0 @@
-myhosts:
-  hosts:
-    my_host_01:
-      ansible_host: 188.X.X.X
-  # vars:
-  #   ansible_user: <USERNAME>
-    # ansible_ssh_pass: <PASSWORD>
