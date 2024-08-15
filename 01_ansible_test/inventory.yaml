@@ -1,0 +1,18 @@
+primary_group:
+  hosts:
+    p_host_01:
+      ansible_host: 178.128.209.49
+    p_host_02:
+      ansible_host: 178.128.218.195
+
+secondary_group:
+  hosts:
+    s_host_01:
+      ansible_host: 178.128.214.72
+
+host_metagroup:
+  children:
+    primary_group:
+    secondary_group:
+  vars: 
+    ansible_user: root

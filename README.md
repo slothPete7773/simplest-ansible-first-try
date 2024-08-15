@@ -81,13 +81,13 @@ ansible_ssh_pass=your_passWoDr
 Verify the inventory.
 
 ```sh
-ansible-inventory -i inventory.yaml --list
+ansible-inventory -i 01_ansible_test/inventory.yaml --list
 ```
 
 ### 2. Ping the `myhosts` group in the inventory
 
 ```sh
-ansible myhosts -m ping -i inventory.yaml
+ansible all -m ping -i 01_ansible_test/inventory.yaml
 ```
 
 The result should show Pong.
@@ -196,8 +196,5 @@ The following is a Playbook from the previous `inventory.yaml`.
 Then, we should run the following command to execute the Playbook. But just use the `run-ansible.sh` script and enter the Server username and password.
 
 ```sh
-ansible-playbook -i inventory.yaml \
-    -u <username_here> \
-    -k \
-    playbook.yaml
+ansible-playbook -i 01_ansible_test/inventory.yaml 01_ansible_test/playbook.yaml
 ```
