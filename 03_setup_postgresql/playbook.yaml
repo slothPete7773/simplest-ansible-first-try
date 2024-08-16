@@ -1,0 +1,163 @@
+---
+# - name: Remove postgres
+#   hosts: db
+#   tasks: 
+#     - name: Stop PostgreSQL service
+#       ansible.builtin.service:
+#         name: postgresql
+#         state: stopped
+
+#     - name: Remove PostgreSQL packages
+#       ansible.builtin.apt:
+#         name: "{{ item }}"
+#         state: absent
+#       loop:
+#         - postgresql
+#         - postgresql-client
+#         - postgresql-contrib
+#         - postgresql-server-dev-*
+#         - libpq-dev
+#       ignore_errors: yes
+    
+#     - name: Remove PostgreSQL data directory
+#       ansible.builtin.file:
+#         path: /var/lib/postgresql
+#         state: absent
+#         recurse: yes
+#       ignore_errors: yes
+
+#     - name: Remove PostgreSQL configuration directory
+#       ansible.builtin.file:
+#         path: /etc/postgresql
+#         state: absent
+#         recurse: yes
+#       ignore_errors: yes
+
+#     - name: Remove PostgreSQL log directory
+#       ansible.builtin.file:
+#         path: /var/log/postgresql
+#         state: absent
+#         recurse: yes
+#       ignore_errors: yes
+
+#     - name: Remove PostgreSQL user
+#       ansible.builtin.user:
+#         name: postgres
+#         state: absent
+#       ignore_errors: yes
+
+#     - name: Remove PostgreSQL group
+#       ansible.builtin.group:
+#         name: postgres
+#         state: absent
+#       ignore_errors: yes
+
+
+- name: Deploying postgresql database 
+  hosts: db
+  vars:
+    db_name: student_address
+    db_user: slothpete
+    db_password: slothpete
+  pre_tasks:
+    - name: "Install packages"
+      apt: 
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      with_items:
+        - postgresql
+        - python3-psycopg2
+  tasks:
+    - name: "Find out if PostgreSQL is initialized"
+      ansible.builtin.stat:
+        path: "/var/lib/pgsql/data/pg_hba.conf"
+      register: postgres_data
+    - name: Ensure PostgreSQL service is running and enabled on boot
+      ansible.builtin.service:
+        name: postgresql
+        state: started
+        enabled: true
+    - name: "Create app database"
+      community.postgresql.postgresql_db:
+        state: present
+        name: "{{ db_name }}"
+      become: true
+      become_user: postgres
+
+    - name: "Create db user"
+      community.postgresql.postgresql_user:
+        state: present
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+      become: yes
+      become_user: postgres
+    - name: "Grant db user access to app db"
+      community.postgresql.postgresql_privs:
+        type: database
+        database: "{{ db_name }}"
+        roles: "{{ db_user }}"
+        grant_option: no
+        privs: all
+      become: yes
+      become_user: postgres
+    - name: Get PostgreSQL version
+      ansible.builtin.command: "psql -V"
+      register: postgres_version_output
+    - name: Extract PostgreSQL major version
+      ansible.builtin.set_fact:
+        postgresql_version: "{{ postgres_version_output.stdout.split(' ')[2].split('.')[0] }}"
+    # - name: Modify pg_hba.conf to use md5 for local connections
+    #   ansible.builtin.lineinfile:
+    #     path: /etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf
+    #     regexp: '^local\s+all\s+postgres\s+peer'
+    #     line: 'local   all             postgres                                md5'
+    #     backup: yes
+    - name: "Allow md5 connection for the db user"
+      community.postgresql.postgresql_pg_hba:
+        dest: /etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf
+        contype: host
+        databases: all
+        method: md5
+        users: "{{ db_user }}"
+        create: true
+      become: yes
+      become_user: postgres
+      notify: restart postgres
+
+  handlers:
+    - name: restart postgres
+      ansible.builtin.service:
+        name: postgresql
+        state: restarted
+      # service: name=postgresql state=restarted
+
+    # - name: Create slothpete user
+    #   community.postgresql.postgresql_user:
+    #     name: slothpete
+    #     password: password
+
+
+    # - name: Get PostgreSQL version
+    #   ansible.builtin.command: "psql -V"
+    #   register: postgres_version_output
+    # - name: Extract PostgreSQL major version
+    #   ansible.builtin.set_fact:
+    #     postgresql_version: "{{ postgres_version_output.stdout.split(' ')[2].split('.')[0] }}"
+    # - name: Modify pg_hba.conf to use md5 for local connections
+    #   ansible.builtin.lineinfile:
+    #     path: /etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf
+    #     regexp: '^local\s+all\s+postgres\s+peer'
+    #     line: 'local   all             postgres                                md5'
+    #     backup: yes
+    # - name: Restart PostgreSQL service to apply changes
+    #   ansible.builtin.service:
+    #     name: postgresql
+    #     state: restarted
+    # - name: Set PostgreSQL password for user postgres
+    #   ansible.builtin.shell: |
+    #     sudo -u postgres psql -c "ALTER USER postgres PASSWORD '{{ postgres_password }}';"
+    #   vars:
+    #     postgres_password: "password"
+
+

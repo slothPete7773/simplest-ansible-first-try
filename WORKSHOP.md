@@ -13,6 +13,8 @@ This workshop mostly copy from [this Youtube](https://www.youtube.com/watch?v=kW
 
 ## Instruction
 
+0. Prepare the host addresses in the script `setup.sh` and execute it to prepare host address for Ansible in `inventory.yaml` file.
+
 very simple, just demonstration, test connection
 
 *draft*
@@ -39,5 +41,7 @@ $ ansible db -m ping -i 02_ansible_workshop/inventory.yaml
 2. setup Playbook for install dependencies and packages
 
 ```sh
-ansible-playbook 02_ansible_workshop/playbook.yaml -i 02_ansible_workshop/inventory.yaml
+$ ansible-playbook 02_ansible_workshop/playbook.yaml -i 02_ansible_workshop/inventory.yaml
 ```
+
+ansible-playbook 00a_jinja2_template/playbook.yaml -i 00a_jinja2_template/inventory.yaml

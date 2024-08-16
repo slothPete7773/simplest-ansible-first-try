@@ -44,3 +44,17 @@ host_metagroup:
   vars: 
     ansible_user: root
 EOF
+
+cat << EOF > "03_setup_postgresql/inventory.yaml"
+db:
+  hosts:
+    s_host_01:
+      ansible_host: $HOST_1
+
+host_metagroup:
+  children:
+    web:
+    db:
+  vars: 
+    ansible_user: root
+EOF

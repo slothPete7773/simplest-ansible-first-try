@@ -1,0 +1,11 @@
+db:
+  hosts:
+    s_host_01:
+      ansible_host: 162.X.X.20
+
+host_metagroup:
+  children:
+    web:
+    db:
+  vars: 
+    ansible_user: root

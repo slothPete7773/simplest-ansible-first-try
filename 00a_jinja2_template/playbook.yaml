@@ -1,0 +1,15 @@
+---
+- name: Deploying sqlite3 database 
+  hosts: db
+  tasks:
+    - name: Install sqlite3 
+      apt:
+       name: sqlite3
+       state: latest
+- name: Write hostname
+  hosts: all
+  tasks:
+  - name: write hostname using jinja2
+    ansible.builtin.template:
+       src: ./templates/test.j2
+       dest: /tmp/hostname2

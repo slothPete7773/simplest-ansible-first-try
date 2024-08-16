@@ -1,0 +1,42 @@
+---
+- name: Deploying sqlite3 database 
+  hosts: db
+  tasks:
+    - name: Install sqlite3 
+      apt:
+       name: sqlite3
+       state: latest
+- name: Write hostname
+  hosts: all
+  tasks:
+  - name: write hostname using jinja2
+    ansible.builtin.template:
+       src: ./templates/test.j2
+       dest: /tmp/hostname
+
+# - name: Deploying nginx webserver
+#   hosts: web
+#   tasks:
+#     - name: Install nginx latest version and start service
+#       apt:
+#         name: nginx
+#         state: latest
+#     - name: Start nginx service
+#       ansible.builtin.service:
+#         name: nginx
+#         state: started
+#     - name: Allow Uncomplicated Firewall for nginx
+#       ufw:
+#         rule: allow
+#         port: 80
+#         proto: tcp
+#     - name: Copy newindex.html to public index.html
+#       ansible.builtin.copy:
+#         src: ./index.html
+#         dest: /var/www/html/index.nginx-debian.html
+#         follow: yes
+#     - name: Reload nginx webserver
+#       ansible.builtin.service:
+#         name: nginx
+#         state: reloaded
+

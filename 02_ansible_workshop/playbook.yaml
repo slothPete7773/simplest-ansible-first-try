@@ -25,10 +25,32 @@
         name: nginx
         state: reloaded
 
-- name: Deploying sqlite3 database 
+- name: Ensure SQLite3 is installed
   hosts: db
-  tasks:
-    - name: Install sqlite3 
-      apt:
-       name: sqlite3
-       state: latest
+  tasks: 
+    - name: Ensure SQLite3 is installed
+      ansible.builtin.package:
+        name: sqlite3
+        state: present
+    - name: Ensure SQLite-Utils is installed
+      ansible.builtin.package:
+        name: sqlite-utils
+        state: present
+    - name: Create SQLite3 database file
+      ansible.builtin.command:
+        cmd: sqlite3 /root/sqll3.db "VACUUM;"
+      args:
+        creates: /root/sqll3.db
+    - name: Create a table with a primary key and default values
+      ttafsir.sqlite_utils.create:
+        if_not_exists: true
+        db_path: /root/sqll3.db
+        table: cats
+        columns:
+          id: int
+          name: str
+          breed: str
+          weight: float
+        pk: id
+        defaults:
+          breed: "Unknown"
