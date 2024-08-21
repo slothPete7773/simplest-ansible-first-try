@@ -3,8 +3,10 @@
 > Note:
 > - The following tutorial is performed on MacOS ARM
 
-1. Run `setup.sh` to build host inventory in each lab directory.
-2. Run `ansible-playbook -i 0X_lab_directory/inventory.yaml 0X_lab_directory/playbook.yaml` to execute the Playbook's tasks.
+1. Edit file `setup.sh` to add your own server for Ansible managed-nodes for testing. Edit the variable `HOST_1`, `HOST_2`, `HOST_3`.
+   1. Recommending quick provision via Digitalocean Droplet.
+2. Run `setup.sh` to build host inventory in each lab directory.
+3. Run `ansible-playbook -i 0X_lab_directory/inventory.yaml 0X_lab_directory/playbook.yaml` to execute the Playbook's tasks.
 
 ## Prerequisite
 
