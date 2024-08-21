@@ -58,3 +58,16 @@ host_metagroup:
   vars: 
     ansible_user: root
 EOF
+
+cat << EOF > "04_setup_docker/inventory.yaml"
+docker:
+  hosts:
+    d_host_01:
+      ansible_host: $HOST_2
+
+host_metagroup:
+  children:
+    docker:
+  vars: 
+    ansible_user: root
+EOF
