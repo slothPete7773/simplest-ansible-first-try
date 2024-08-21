@@ -3,6 +3,9 @@
 > Note:
 > - The following tutorial is performed on MacOS ARM
 
+1. Run `setup.sh` to build host inventory in each lab directory.
+2. Run `ansible-playbook -i 0X_lab_directory/inventory.yaml 0X_lab_directory/playbook.yaml` to execute the Playbook's tasks.
+
 ## Prerequisite
 
 1. Install the folllowing
